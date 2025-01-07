@@ -202,7 +202,7 @@ int search_product(Products *pProducts, int products_index[pProducts->nProducts]
 
 int get_all_products_from_csv(char ***lines, int *nLines) 
 {
-    const char *file_path = "./relatorios/produtos.csv";
+    const char *file_path = "./DB/produtos.csv";
 
     // Open the CSV file for reading
     FILE *file = fopen(file_path, "r");
@@ -277,7 +277,7 @@ int write_products_to_csv(char **lines, int nLines, const char *file_path)
 
 int insert_product_to_csv(Product product, int index) 
 {
-    const char *file_path = "./relatorios/produtos.csv";
+    const char *file_path = "./DB/produtos.csv";
 
     char **lines = NULL;
     int nLines = 0;
@@ -318,7 +318,7 @@ int insert_product_to_csv(Product product, int index)
 
 int remove_products_from_csv(int *products_index, int nIndex)
 {
-    const char *file_path = "./relatorios/produtos.csv";
+    const char *file_path = "./DB/produtos.csv";
 
     char **lines = NULL;
     int nLines = 0;
@@ -498,7 +498,7 @@ int edit_product(Products *pProducts)
 
 int export_products_to_csv(Products *pProducts) 
 {
-    FILE *file = fopen("./relatorios/produtos.csv", "w");
+    FILE *file = fopen("./DB/produtos.csv", "w");
 
     if (file == NULL) 
     {
@@ -537,7 +537,7 @@ int import_products_from_csv(Products *pProducts)
     else
     {
         // Build the full file path safely
-        snprintf(full_path, sizeof(full_path), "./relatorios/%s", file_name);
+        snprintf(full_path, sizeof(full_path), "./DB/%s", file_name);
     }
 
     if (pProducts->pProducts == NULL) 
@@ -615,7 +615,7 @@ int import_products_from_csv(Products *pProducts)
 
 int create_products_file()
 {
-    FILE *file = fopen("./relatorios/produtos.csv", "w");
+    FILE *file = fopen("./DB/produtos.csv", "w");
 
     if (file == NULL)
     {

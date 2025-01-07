@@ -247,7 +247,7 @@ int search_payment(Payments *pPayments, int payments_index[pPayments->nPayments]
 
 int get_all_payments_from_csv(char ***lines, int *nLines) 
 {
-    const char *file_path = "./relatorios/pagamentos.csv";
+    const char *file_path = "./DB/pagamentos.csv";
 
     // Open the CSV file for reading
     FILE *file = fopen(file_path, "r");
@@ -322,7 +322,7 @@ int write_payments_to_csv(char **lines, int nLines, const char *file_path)
 
 int insert_payment_to_csv(Payment payment, int index) 
 {
-    const char *file_path = "./relatorios/pagamentos.csv";
+    const char *file_path = "./DB/pagamentos.csv";
 
     char **lines = NULL;
     int nLines = 0;
@@ -363,7 +363,7 @@ int insert_payment_to_csv(Payment payment, int index)
 
 int remove_payments_from_csv(int *payments_index, int nIndex)
 {
-    const char *file_path = "./relatorios/pagamentos.csv";
+    const char *file_path = "./DB/pagamentos.csv";
 
     char **lines = NULL;
     int nLines = 0;
@@ -529,7 +529,7 @@ int edit_payment(Payments *pPayments)
 
 int export_payment_to_csv(Payments *pPayments) 
 {
-    FILE *file = fopen("./relatorios/pagamentos.csv", "w");
+    FILE *file = fopen("./DB/pagamentos.csv", "w");
 
     if (file == NULL) 
     {
@@ -568,7 +568,7 @@ int import_payment_from_csv(Payments *pPayments)
     else
     {
         // Build the full file path safely
-        snprintf(full_path, sizeof(full_path), "./relatorios/%s", file_name);
+        snprintf(full_path, sizeof(full_path), "./DB/%s", file_name);
     }
 
     if (pPayments->pPayments == NULL) 
@@ -646,7 +646,7 @@ int import_payment_from_csv(Payments *pPayments)
 
 int create_payments_file()
 {
-    FILE *file = fopen("./relatorios/pagamentos.csv", "w");
+    FILE *file = fopen("./DB/pagamentos.csv", "w");
 
     if (file == NULL)
     {
