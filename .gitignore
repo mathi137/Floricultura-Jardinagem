@@ -1,3 +1,13 @@
+<<<<<<< HEAD
 .exe
 .vscode
 test
+=======
+*
+!/**/
+!*.*
+
+.vscode/
+.vscode
+.exe
+>>>>>>> a98a39ebfc8939589de92d750a07364a6b1ace51
