@@ -700,9 +700,9 @@ int edit_payment(Payments *pPayments)
 *  Retorna:
 *      int: 1 se sucesso, 0 se falha.
 */
-int export_payment_to_csv(Payments *pPayments) 
+int export_payment_to_csv(Payments *pPayments, int is_report) 
 {
-    FILE *file = fopen("./DB/pagamentos.csv", "w");
+    FILE *file = fopen(is_report ? "./relatorios/pagamentos.csv" : "./DB/pagamentos.csv", "w");
 
     if (file == NULL) 
     {
@@ -737,7 +737,7 @@ int import_payment_from_csv(Payments *pPayments)
     char file_name[128];
     char full_path[256];
     
-    printf("\nDigite o CPF do arquivo CSV: ");
+    printf("\nDigite o nome do arquivo CSV: ");
     getchar();
     fgets(file_name, 128, stdin);
     trim(file_name);
@@ -818,7 +818,7 @@ int import_payment_from_csv(Payments *pPayments)
     printf("\npagamentos importados com sucesso. Total: %d\n", pPayments->nPayments);
     fclose(file);
 
-    if (!export_payment_to_csv(pPayments)) return 0;
+    if (!export_payment_to_csv(pPayments, 0)) return 0;
 
     payment_id += pPayments->nPayments;
 
@@ -880,7 +880,7 @@ int payment_menu(Payments *pPayments, Products *pProducts)
     do
     {
         printf("\nEscolha uma opcao:\n");
-        printf("1: Adicionar pagamento\n2: Remover pagamento\n3: Editar pagamento\n4: Listar pagamentos\n5: Exportar pagamentos para CSV\n6: Importar pagamentos de CSV\n0: Sair\n");
+        printf("1: Adicionar pagamento\n2: Remover pagamento\n3: Editar pagamento\n4: Listar pagamentos\n5: Exportar pagamentos para CSV\n0: Sair\n");
 
         scanf("%d", &option);
 
@@ -903,12 +903,12 @@ int payment_menu(Payments *pPayments, Products *pProducts)
             break;
 
         case 5:
-            export_payment_to_csv(pPayments);
+            export_payment_to_csv(pPayments, 1);
             break;
 
-        case 6:
-            import_payment_from_csv(pPayments);
-            break;
+        // case 6:
+            // import_payment_from_csv(pPayments);
+            // break;
 
         default:
             break;

@@ -657,9 +657,9 @@ int edit_product(Products *pProducts)
 *  Retorna:
 *      int: 1 se sucesso, 0 se falha.
 */
-int export_products_to_csv(Products *pProducts) 
+int export_products_to_csv(Products *pProducts, int is_report) 
 {
-    FILE *file = fopen("./DB/produtos.csv", "w");
+    FILE *file = fopen(is_report ? "./relatorios/produtos.csv" : "./DB/produtos.csv", "w");
 
     if (file == NULL) 
     {
@@ -780,7 +780,7 @@ int import_products_from_csv(Products *pProducts)
     printf("\nProdutos importados com sucesso. Total: %d\n", pProducts->nProducts);
     fclose(file);
 
-    if (!export_products_to_csv(pProducts)) return 0;
+    if (!export_products_to_csv(pProducts, 0)) return 0;
 
     product_id += pProducts->nProducts;
 
@@ -868,7 +868,7 @@ int product_menu(Products *pProducts)
             break;
         
         case 6:
-            export_products_to_csv(pProducts);
+            export_products_to_csv(pProducts, 1);
             break;
 
         case 7:
