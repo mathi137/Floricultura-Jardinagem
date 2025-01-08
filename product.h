@@ -445,30 +445,31 @@ int remove_products_from_csv(int *products_index, int nIndex)
     char **lines = NULL;
     int nLines = 0;
 
+    // Obtem todas as linhas do arquivo CSV
     if (!get_all_products_from_csv(&lines, &nLines)) return 0;
 
-    // O ultimo elemento passa para a possicao do produto removido
+    // Remove as linhas especificadas pelos índices
     for (int i = 0; i < nIndex; i++) 
     {
-        // Incrementa o indice pois o array de indices e zero-based
+        // Incrementa o índice pois o array de índices é zero-based
         int index = products_index[i] + 1;
 
+        // Move as linhas subsequentes para preencher o espaço da linha removida
         for (int j = index; j < nLines - i - 1; j++) 
         {
-            // Copia a linha seguinte para a posicao atual
             lines[j] = lines[j + 1];
         }
     }
     
-    // Decrementa o numero de linhas
+    // Atualiza o número de linhas
     nLines -= nIndex;
 
-    // Realloc o array de linhas para o novo tamanho
+    // Realoca o array de linhas para o novo tamanho
     char **temp = (char **)realloc(lines, nLines * sizeof(char *));
     if (temp == NULL) 
     {
         printf("\nErro ao realocar memória para nova linha.\n");
-        // Free as linhas antes de retornar
+        // Libera as linhas antes de retornar
         for (int i = 0; i < nLines; i++) 
             free(lines[i]);
         free(lines);
@@ -477,13 +478,8 @@ int remove_products_from_csv(int *products_index, int nIndex)
     
     lines = temp;
 
-    // Escreve as linhas no arquivo CSV
+    // Escreve as linhas atualizadas de volta no arquivo CSV
     if (!write_products_to_csv(lines, nLines, file_path)) return 0;
-
-    // Free as linhas apos escrita
-    for (int i = 0; i < nLines; i++) 
-        free(lines[i]);
-    free(lines);
 
     return 1;
 }
