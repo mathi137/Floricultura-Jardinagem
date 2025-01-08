@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-
+#define LINE_SIZE 1024
 
 typedef struct
 {
@@ -14,6 +14,17 @@ typedef struct
 } Client;
 
 
+void addSomeStrings(char ***input, char newLine[1024], int *currentSize)
+{
+    char **data;
+    
+    data = (char **) realloc(*input, (*currentSize+1) * sizeof(char *));
+    data[*currentSize] = (char *) malloc(LINE_SIZE*sizeof(char *));
+    strcpy(data[*currentSize], newLine);
+    currentSize++;
+}
+
+// feito
 int ListarCliente(char id[])
 {
     FILE * arq = fopen("DB/Clients.csv", "r");
@@ -36,7 +47,7 @@ int ListarCliente(char id[])
     return 0;
 }
 
-
+// feito
 int ListarClientes()
 {
     FILE * arq = fopen("DB/Clients.csv", "r");
@@ -59,7 +70,7 @@ int ListarClientes()
     return 0;
 }
 
-
+// feito
 int InserirCliente(Client *clt)
 {
     FILE * arq = fopen("DB/Clients.csv", "a");
@@ -89,20 +100,29 @@ int InserirCliente(Client *clt)
 
 int AlterarCliente(Client *clt, char id[])
 {
-    FILE * arq = fopen("DB/Clients.csv", "r+");
-    char line[1024] = "", *iten, *cpf, *name, *name_enterprise, *phone, *email, *birthdate,
-    *fileLines[1024];
-    int numLines = 0, target, i;
+    FILE * arq = fopen("DB/Clients.csv", "r");
+    char line[1024] = "", *iten, *cpf, *name, *name_enterprise, *phone, *email, *birthdate;
+    int numLines = 0, target= -1, i=0, size = 0;
+
+    char **fileLines = (char **)malloc(sizeof(char *));
 
     while (NULL != fgets(line, sizeof(line), arq))
     {
-        line[strcspn(line, "\n")] = 0;
         iten = strtok(line, ";");
 
         if (strcmp(iten, id) == 0) target = i;
 
+        addSomeStrings(&fileLines, line, &size);
+
         i++;
     }
+
+    if (target == -1) return 1;
+
+    fclose(arq);
+
+    fileLines[target][strcspn(fileLines[target], "\n")] = 0;
+    iten = strtok(fileLines[target], ";");
 
     cpf = strtok(NULL, ";");
     name = strtok(NULL, ";");
@@ -112,10 +132,12 @@ int AlterarCliente(Client *clt, char id[])
     birthdate = strtok(NULL, ";");
     
     strcpy(line, "");
+    
+    printf("%s\n", *cpf);
 
     if (!(clt->cpf))
     {
-        cpf = clt->cpf;
+        strcat(cpf, clt->cpf);
     }
     if (!(clt->name))
     {
@@ -138,9 +160,12 @@ int AlterarCliente(Client *clt, char id[])
         birthdate = clt->birthdate;
     }
 
+    printf("%s\n", cpf);
+
     strcat(line, id);
     strcat(line, ";");
     strcat(line, cpf);
+    printf("%s\n", line);
     strcat(line, ";");
     strcat(line, name);
     strcat(line, ";");
@@ -153,6 +178,23 @@ int AlterarCliente(Client *clt, char id[])
     strcat(line, birthdate);
     strcat(line, "\n");
     
+    printf("%d\n", target);
+
+    strcpy(fileLines[target], line);
+    
+    printf("%d\n", target);
+    
+    arq = fopen("DB/Clients.csv", "w");
+    
+    printf("%d\n", target);
+
+    for (size_t i = 0; i < size+1; i++)
+    {
+        fputs(fileLines[i], arq);
+    }
+    
+    printf("%d\n", target);
+
     fclose(arq);
     return 0;
 }
