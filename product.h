@@ -36,6 +36,7 @@ int generate_product_id()
     return ++product_id;
 }
 
+
 /*
 *  Função: print_product
 *  Descrição: Imprime os detalhes do produto.
@@ -453,6 +454,7 @@ int remove_products_from_csv(int *products_index, int nIndex)
     {
         // Incrementa o índice pois o array de índices é zero-based
         int index = products_index[i] + 1;
+        printf("\nIndex: %d\n", index);
 
         // Move as linhas subsequentes para preencher o espaço da linha removida
         for (int j = index; j < nLines - i - 1; j++) 
@@ -587,8 +589,6 @@ int remove_product(Products *pProducts)
     
     pProducts->nProducts -= nProducts_found;
     pProducts->pProducts = (Product *)realloc(pProducts->pProducts, pProducts->nProducts * sizeof(Product));
-
-    if (pProducts->pProducts == NULL) return 0;
 
     remove_products_from_csv(products_index, nProducts_found);
 

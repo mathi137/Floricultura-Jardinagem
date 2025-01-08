@@ -48,15 +48,32 @@ int generate_payment_id()
 */
 void print_payment(const Payment *pPayment) 
 {
-    printf("\nID Produto: %d\n", pPayment->id);
+    printf("\nID Pagamento: %d\n", pPayment->id);
     printf("CPF: %s\n", pPayment->cpf);
     printf("Data: %s\n", pPayment->date);
     printf("Preco total: %.2f\n", pPayment->total_price);
 
+    int *counts = (int *)calloc(pPayment->pProducts->nProducts, sizeof(int));
+
+    if (counts == NULL) {
+        printf("Erro ao alocar memória para o contador de produtos.\n");
+        return;
+    }
+
+    // Contador ocorrencias de cada produto
+    for (int i = 0; i < pPayment->pProducts->nProducts; i++) {
+        counts[pPayment->pProducts->pProducts[i].id]++;
+    }
+
     printf("Produtos: ");
-    for (int i = 0; i < pPayment->pProducts->nProducts; i++)
-        printf("%s ", pPayment->pProducts->pProducts[i].name);
+    for (int i = 0; i < pPayment->pProducts->nProducts; i++) {
+        if (counts[i] > 0) {
+            printf("%dx%s ", counts[i], pPayment->pProducts->pProducts[i].name);
+        }
+    }
     printf("\n");
+
+    free(counts);
 }
 
 /*
@@ -615,8 +632,6 @@ int remove_payment(Payments *pPayments)
     
     pPayments->nPayments -= nPayments_found;
     pPayments->pPayments = (Payment *)realloc(pPayments->pPayments, pPayments->nPayments * sizeof(Payment));
-
-    if (pPayments->pPayments == NULL) return 0;
 
     remove_payments_from_csv(payments_index, nPayments_found);
 
