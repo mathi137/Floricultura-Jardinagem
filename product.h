@@ -1,9 +1,10 @@
+#ifndef PRODUCT_H
+#define PRODUCT_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-
-// #include "utils.c"
+#include "utils.h"
 
 #define NAME_SIZE 128
 #define DESCRIPTION_SIZE 256
@@ -24,11 +25,26 @@ typedef struct
     int nProducts;
 } Products;
 
+/*
+*  Função: generate_product_id
+*  Descrição: Gera um novo ID para o produto.
+*  Retorna:
+*      int: ID gerado.
+*/
 int generate_product_id()
 {
     return ++product_id;
 }
 
+
+/*
+*  Função: print_product
+*  Descrição: Imprime os detalhes do produto.
+*  Parâmetros:
+*      Product *pProduct: ponteiro para o objeto do tipo Product.
+*  Retorna:
+*      void.
+*/
 void print_product(const Product *pProduct) 
 {
     printf("\nID Produto: %d\n", pProduct->id);
@@ -38,6 +54,14 @@ void print_product(const Product *pProduct)
 
 }
 
+/*
+*  Função: list_products
+*  Descrição: Listar os produtos.
+*  Parâmetros:
+*      Products *pProduct: ponteiro para o objeto do tipo Products.
+*  Retorna:
+*      void.
+*/
 void list_products(const Products *pProducts) 
 {
     if (pProducts->nProducts == 0) 
@@ -53,6 +77,15 @@ void list_products(const Products *pProducts)
 
 }
 
+/*
+*  Função: list_products_alfabetic_order
+*  Descrição: Listar os produtos em ordem alfabetica.
+*  Parâmetros:
+*      Products *pProduct: ponteiro para o objeto do tipo Products.
+*  Retorna:
+*      void.
+*
+*/
 void list_products_alfabetic_order(const Products *pProducts) 
 {
     if (pProducts->nProducts == 0) 
@@ -61,20 +94,24 @@ void list_products_alfabetic_order(const Products *pProducts)
         return;
     }
 
-    Product *products = malloc(pProducts->nProducts * sizeof(Product));
+    // Cria um array temporario para armazenar os produtos
+    Product *products = (Product *)malloc(pProducts->nProducts * sizeof(Product));
     if (products == NULL) 
     {
         printf("\nErro ao alocar memoria\n");
         return;
     }
+    // Copia os produtos para o array temporario
     memcpy(products, pProducts->pProducts, pProducts->nProducts * sizeof(Product));
 
+    // Ordena os produtos em ordem alfabetica
     for (int i = 0; i < pProducts->nProducts - 1; i++) 
     {
         for (int j = 0; j < pProducts->nProducts - i - 1; j++) 
         {
             if (strcmp(products[j].name, products[j+1].name) > 0) 
             {
+                // Troca os produtos
                 Product temp = products[j];
                 products[j] = products[j+1];
                 products[j+1] = temp;
@@ -82,14 +119,24 @@ void list_products_alfabetic_order(const Products *pProducts)
         }
     }
 
+    // Imprime os produtos ordenados
     printf("\n====== Produto ======\n");
     for (int i = 0; i < pProducts->nProducts; i++)
         print_product(products+i);
     printf("\n=====================\n");
 
+    // Libera a memoria do array temporario
     free(products);
 }
 
+/*
+*  Função: scan_product
+*  Descrição: Escaneia os detalhes do produto.
+*  Parâmetros:
+*      Product *pProduct: ponteiro para o objeto do tipo Product.
+*  Retorna:
+*      void.
+*/
 void scan_product(Product *pProduct) 
 {
     if (pProduct->id == 0)
@@ -108,7 +155,16 @@ void scan_product(Product *pProduct)
     scanf("%f", &pProduct->price);
 }
 
-int search_product_by_id(Products *pProducts, int products_index[pProducts->nProducts]) 
+/*
+*  Função: search_product_by_id
+*  Descrição: Busca um produto pelo ID.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*      int products_index[]: ponteiro para o array de indices dos produtos encontrados.
+*  Retorna:
+*      int: quantidade de produtos encontrados.
+*/
+int search_product_by_id(Products *pProducts, int products_index[]) 
 {
     int id;
     printf("\nDigite o ID do produto: ");
@@ -127,7 +183,16 @@ int search_product_by_id(Products *pProducts, int products_index[pProducts->nPro
     return count;
 }
 
-int search_product_by_name(Products *pProducts, int products_index[pProducts->nProducts]) 
+/*
+*  Função: search_product_by_name    
+*  Descrição: Busca um produto pelo nome.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*      int products_index[]: ponteiro para o array de indices dos produtos encontrados.
+*  Retorna:
+*      int: quantidade de produtos encontrados.
+*/
+int search_product_by_name(Products *pProducts, int products_index[]) 
 {
     char name[NAME_SIZE];
     printf("\nDigite o nome do produto: ");
@@ -148,7 +213,16 @@ int search_product_by_name(Products *pProducts, int products_index[pProducts->nP
     return count;
 }
 
-int search_product_by_price_range(Products *pProducts, int products_index[pProducts->nProducts]) 
+/*
+*  Função: search_product_by_price_range    
+*  Descrição: Busca um produto pelo nome.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*      int products_index[]: ponteiro para o array de indices dos produtos encontrados.
+*  Retorna:
+*      int: quantidade de produtos encontrados.
+*/
+int search_product_by_price_range(Products *pProducts, int products_index[]) 
 {
     float min_price, max_price;
     printf("\nDigite o preco minimo: ");
@@ -169,7 +243,16 @@ int search_product_by_price_range(Products *pProducts, int products_index[pProdu
     return count;
 }
 
-int search_product(Products *pProducts, int products_index[pProducts->nProducts]) 
+/*
+*  Função: search_product    
+*  Descrição: Busca um produto.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*      int products_index[]: ponteiro para o array de indices dos produtos encontrados.
+*  Retorna:
+*      int: quantidade de produtos encontrados.
+*/
+int search_product(Products *pProducts, int products_index[]) 
 {
     printf("\nOpcoes de busca:\n");
     printf("1: Buscar por ID\n2: Buscar por nome\n3: Buscar por faixa de preco\n");
@@ -200,11 +283,20 @@ int search_product(Products *pProducts, int products_index[pProducts->nProducts]
     return 0;
 }
 
-int get_all_products_from_csv(char ***lines, int *nLines) 
+/*
+*  Função: get_all_products_from_csv
+*  Descrição: Obtem todos os produtos do arquivo CSV.
+*
+*  Parâmetros:
+*      char ***lines: ponteiro para o array de ponteiros para as linhas do CSV.
+*      int *nLines: ponteiro para o numero de linhas do CSV.
+*
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
+int get_all_products_from_csv(char ***lines, int *nLines)
 {
     const char *file_path = "./DB/produtos.csv";
-
-    // Open the CSV file for reading
     FILE *file = fopen(file_path, "r");
     if (file == NULL) 
     {
@@ -212,12 +304,12 @@ int get_all_products_from_csv(char ***lines, int *nLines)
         return 0;
     }
 
-    // Read all lines into memory
+    // Ler todas as linhas do CSV
     char buffer[512];
 
     while (fgets(buffer, sizeof(buffer), file)) 
     {
-        // Allocate memory for a new line
+        // Aloca memoria para uma nova linha
         char *line = strdup(buffer);
         if (line == NULL) 
         {
@@ -226,7 +318,8 @@ int get_all_products_from_csv(char ***lines, int *nLines)
             return 0;
         }
 
-        char **temp = realloc(*lines, ((*nLines) + 1) * sizeof(char *));
+        // Aloca ou realoca memoria para o array de linhas
+        char **temp = (char **)realloc(*lines, ((*nLines) + 1) * sizeof(char *));
         if (temp == NULL) 
         {
             printf("\nErro ao realocar memória para as linhas.\n");
@@ -243,6 +336,18 @@ int get_all_products_from_csv(char ***lines, int *nLines)
     return 1;
 }
 
+/*
+*  Função: write_products_to_csv    
+*  Descrição: Escreve os produtos no arquivo CSV.
+*  Parâmetros:
+*      char **lines: ponteiro para o array de ponteiros para as linhas do CSV.
+*      int nLines: numero de linhas do CSV.
+*      const char *file_path: caminho do arquivo CSV.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*  
+*  Nota: A função libera a memória alocada para as linhas do CSV.
+*/
 int write_products_to_csv(char **lines, int nLines, const char *file_path)
 {
     if (lines == NULL)
@@ -251,7 +356,6 @@ int write_products_to_csv(char **lines, int nLines, const char *file_path)
         return 0;
     }
 
-    // Write all lines back to the CSV file
     FILE *file = fopen(file_path, "w");
     if (file == NULL) 
     {
@@ -264,7 +368,8 @@ int write_products_to_csv(char **lines, int nLines, const char *file_path)
     for (int i = 0; i < nLines; i++) 
     {
         fprintf(file, "%s", lines[i]);
-        free(lines[i]); // Free each line after writing
+        // Free em cada linha apos escrita
+        free(lines[i]); 
     }
 
     free(lines);
@@ -275,6 +380,15 @@ int write_products_to_csv(char **lines, int nLines, const char *file_path)
     return 1;
 }
 
+/*
+*  Função: insert_product_to_csv    
+*  Descrição: Insere um produto no arquivo CSV.
+*  Parâmetros:
+*      Product product: objeto do tipo Product.
+*      int index: indice do produto na lista.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
 int insert_product_to_csv(Product product, int index) 
 {
     const char *file_path = "./DB/produtos.csv";
@@ -298,7 +412,7 @@ int insert_product_to_csv(Product product, int index)
     else 
     {
         // Adicionar um nova linha se o index for maior que o tamanho atual
-        char **temp = realloc(lines, (nLines + 1) * sizeof(char *));
+        char **temp = (char **)realloc(lines, (nLines + 1) * sizeof(char *));
         if (temp == NULL) 
         {
             printf("\nErro ao realocar memória para nova linha.\n");
@@ -316,6 +430,15 @@ int insert_product_to_csv(Product product, int index)
     return 1;
 }
 
+/*
+*  Função: remove_products_from_csv    
+*  Descrição: Remove um produto do arquivo CSV.
+*  Parâmetros:
+*      int products_index[pProducts->nProducts]: ponteiro para o array de indices dos produtos encontrados.
+*      int nIndex: indice do produto na lista.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
 int remove_products_from_csv(int *products_index, int nIndex)
 {
     const char *file_path = "./DB/produtos.csv";
@@ -323,25 +446,32 @@ int remove_products_from_csv(int *products_index, int nIndex)
     char **lines = NULL;
     int nLines = 0;
 
+    // Obtem todas as linhas do arquivo CSV
     if (!get_all_products_from_csv(&lines, &nLines)) return 0;
 
-    // O ultimo elemento passa para a possicao do produto removido
+    // Remove as linhas especificadas pelos índices
     for (int i = 0; i < nIndex; i++) 
     {
+        // Incrementa o índice pois o array de índices é zero-based
         int index = products_index[i] + 1;
+        printf("\nIndex: %d\n", index);
 
+        // Move as linhas subsequentes para preencher o espaço da linha removida
         for (int j = index; j < nLines - i - 1; j++) 
         {
             lines[j] = lines[j + 1];
         }
     }
     
+    // Atualiza o número de linhas
     nLines -= nIndex;
 
-    char **temp = realloc(lines, nLines * sizeof(char *));
+    // Realoca o array de linhas para o novo tamanho
+    char **temp = (char **)realloc(lines, nLines * sizeof(char *));
     if (temp == NULL) 
     {
         printf("\nErro ao realocar memória para nova linha.\n");
+        // Libera as linhas antes de retornar
         for (int i = 0; i < nLines; i++) 
             free(lines[i]);
         free(lines);
@@ -350,11 +480,20 @@ int remove_products_from_csv(int *products_index, int nIndex)
     
     lines = temp;
 
+    // Escreve as linhas atualizadas de volta no arquivo CSV
     if (!write_products_to_csv(lines, nLines, file_path)) return 0;
 
     return 1;
 }
 
+/*
+*  Função: add_product    
+*  Descrição: Adiciona um produto.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
 int add_product(Products *pProducts) 
 {
     Product product = { 0 };
@@ -410,6 +549,14 @@ int add_product(Products *pProducts)
     return 1;
 }
 
+/*
+*  Função: remove_product    
+*  Descrição: Remove um produto.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
 int remove_product(Products *pProducts) 
 {
     if (pProducts->nProducts == 0) 
@@ -443,14 +590,20 @@ int remove_product(Products *pProducts)
     pProducts->nProducts -= nProducts_found;
     pProducts->pProducts = (Product *)realloc(pProducts->pProducts, pProducts->nProducts * sizeof(Product));
 
-    if (pProducts->pProducts == NULL) return 0;
-
     remove_products_from_csv(products_index, nProducts_found);
 
     printf("\nProduto(s) removido(s) com sucesso.\n");
     return 1;
 }
 
+/*
+*  Função: edit_product    
+*  Descrição: Edita um produto.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
 int edit_product(Products *pProducts)
 {
     if (pProducts->nProducts == 0)
@@ -496,9 +649,17 @@ int edit_product(Products *pProducts)
     return 1;
 }
 
-int export_products_to_csv(Products *pProducts) 
+/*
+*  Função: export_products_to_csv    
+*  Descrição: Exporta os produtos para um arquivo CSV.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
+int export_products_to_csv(Products *pProducts, int is_report) 
 {
-    FILE *file = fopen("./DB/produtos.csv", "w");
+    FILE *file = fopen(is_report ? "./relatorios/produtos.csv" : "./DB/produtos.csv", "w");
 
     if (file == NULL) 
     {
@@ -520,6 +681,19 @@ int export_products_to_csv(Products *pProducts)
     return 1;
 }
 
+/*
+*  Função: import_products_from_csv    
+*  Descrição: Importa os produtos de um arquivo CSV.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*
+*  Essa função importa os produtos de um arquivo CSV e os armazena na 
+*  estrutura Products. Caso o usuario deseje sobrescrever os dados, a 
+*  função desaloca a memória antiga e aloca uma nova memória para os 
+*  produtos.
+*/
 int import_products_from_csv(Products *pProducts) 
 {
     char file_name[128];
@@ -536,10 +710,10 @@ int import_products_from_csv(Products *pProducts)
     }
     else
     {
-        // Build the full file path safely
         snprintf(full_path, sizeof(full_path), "./DB/%s", file_name);
     }
 
+    // Verifica se a memoria foi alocada para os produtos
     if (pProducts->pProducts == NULL) 
     {
         // Aloca memoria para o array de produtos
@@ -591,7 +765,7 @@ int import_products_from_csv(Products *pProducts)
     Product product;
     while (fscanf(file, "%d,%128[^,],%256[^,],%f\n", &product.id, product.name, product.description, &product.price) == 4) 
     {
-        Product *temp = realloc(pProducts->pProducts, (pProducts->nProducts + 1) * sizeof(Product));
+        Product *temp = (Product *)realloc(pProducts->pProducts, (pProducts->nProducts + 1) * sizeof(Product));
         if (temp == NULL) {
             fprintf(stderr, "Erro ao realocar memória.\n");
             fclose(file);
@@ -606,13 +780,21 @@ int import_products_from_csv(Products *pProducts)
     printf("\nProdutos importados com sucesso. Total: %d\n", pProducts->nProducts);
     fclose(file);
 
-    if (!export_products_to_csv(pProducts)) return 0;
+    if (!export_products_to_csv(pProducts, 0)) return 0;
 
     product_id += pProducts->nProducts;
 
     return 1;
 }
 
+/*
+*  Função: create_products_file    
+*  Descrição: Cria o arquivo de produtos.
+*  Parâmetros:
+*      void
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
 int create_products_file()
 {
     FILE *file = fopen("./DB/produtos.csv", "w");
@@ -630,12 +812,28 @@ int create_products_file()
     return 1;
 }
 
+/*
+*  Função: free_products    
+*  Descrição: Libera a memoria alocada para os produtos.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
 int free_products(Products *pProducts) 
 {
     free(pProducts->pProducts);
     return 0;
 }
 
+/*
+*  Função: product_menu    
+*  Descrição: Menu de produtos.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
 int product_menu(Products *pProducts) 
 {
     int option;
@@ -670,7 +868,7 @@ int product_menu(Products *pProducts)
             break;
         
         case 6:
-            export_products_to_csv(pProducts);
+            export_products_to_csv(pProducts, 1);
             break;
 
         case 7:
@@ -685,3 +883,5 @@ int product_menu(Products *pProducts)
 
     return 0;
 }
+
+#endif // PRODUCT_H

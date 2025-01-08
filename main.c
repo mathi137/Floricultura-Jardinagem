@@ -1,19 +1,23 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+// #include "client.h"
+#include "product.h"
+#include "payment.h"
 
-#include "utils.c"
-// #include "client.c"
-#include "product.c"
-#include "payment.c"
 
+/*
+*  Função: main
+*  Descrição: Função principal.
+*  Retorna:
+*      0 quando o programa encerrar.
+*/
 int main(void) 
 {
     // Client clients = { NULL, 0 };
     Products products = { NULL, 0 };
     Payments payments = { NULL, 0 };
 
+    // Criar os respectivos arquivos
+    // if (!create_clients_file()) return 0;
     if (!create_products_file()) return 0;
     if (!create_payments_file()) return 0;
 
