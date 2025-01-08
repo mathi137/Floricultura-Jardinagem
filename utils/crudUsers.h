@@ -1,16 +1,17 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #define LINE_SIZE 1024
 
 typedef struct
 {
-    char id[10],
-         cpf[11],
-         name[255],
-         name_enterprise[255],
-         phone[16],
-         email[255],
-         birthdate[16];
+    char id[10];
+    char cpf[16];
+    char name[255];
+    char name_enterprise[255];
+    char phone[16];
+    char email[255];
+    char birthdate[16];
 } Client;
 
 
@@ -30,7 +31,7 @@ int ListarCliente(char id[])
     FILE * arq = fopen("DB/Clients.csv", "r");
     char line[1024] = "", *iten;
 
-    while (NULL != fgets(line, sizeof(line), arq))
+    while (fgets(line, sizeof(line), arq))
     {
         line[strcspn(line, "\n")] = 0;
         iten = strtok(line, ";");
@@ -53,7 +54,7 @@ int ListarClientes()
     FILE * arq = fopen("DB/Clients.csv", "r");
     char line[1024] = "", *iten;
 
-    while (NULL != fgets(line, sizeof(line), arq))
+    while (fgets(line, sizeof(line), arq))
     {
         line[strcspn(line, "\n")] = 0;
         iten = strtok(line, ";");
@@ -73,10 +74,35 @@ int ListarClientes()
 // feito
 int InserirCliente(Client *clt)
 {
-    FILE * arq = fopen("DB/Clients.csv", "a");
+    char *lastID = "0", *cpfConf, _line[1024];
+
+    FILE * arq;
+
+    arq = fopen("DB/Clients.csv", "r");
+
+    while (fgets(_line, sizeof(_line), arq))
+    {
+        lastID = strtok(_line, ";");
+        cpfConf = strtok(NULL, ";");
+
+        if (strcmp(clt->cpf, cpfConf) == 0)
+        {
+            perror("CPF ja cadastrado!");
+            return 1;
+        }
+    }
+
+    fclose(arq);
+
+    arq = fopen("DB/Clients.csv", "a");
     char line[1024] = "";
 
-    strcat(line, clt->id);
+    int id = atoi(lastID)+1;
+    char id_str[10];
+
+    sprintf(id_str, "%d", id);
+
+    strcat(line, id_str);
     strcat(line, ";");
     strcat(line, clt->cpf);
     strcat(line, ";");
@@ -98,109 +124,114 @@ int InserirCliente(Client *clt)
 }
 
 
-int AlterarCliente(Client *clt, char id[])
-{
-    FILE * arq = fopen("DB/Clients.csv", "r");
-    char line[1024] = "", *iten, *cpf, *name, *name_enterprise, *phone, *email, *birthdate;
-    int numLines = 0, target= -1, i=0, size = 0;
-
-    char **fileLines = (char **)malloc(sizeof(char *));
-
-    while (NULL != fgets(line, sizeof(line), arq))
-    {
-        iten = strtok(line, ";");
-
-        if (strcmp(iten, id) == 0) target = i;
-
-        addSomeStrings(&fileLines, line, &size);
-
-        i++;
+// Feito
+int AlterarCliente(Client *clt, char idClt[]) {
+    FILE *arq = fopen("DB/Clients.csv", "r");
+    if (arq == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 1;
     }
 
-    if (target == -1) return 1;
+    char tempLine[1024];
+
+    while (fgets(tempLine, sizeof(tempLine), arq))
+    {
+        char *tempID = strtok(tempLine, ";");
+        char *cpfConf = strtok(NULL, ";");
+
+        if (strcmp(clt->cpf, cpfConf) == 0)
+        {
+            perror("CPF ja existente!");
+            return 1;
+        }
+    }
+
+    FILE *tempFile = fopen("DB/temp.csv", "w");
+    if (tempFile == NULL) {
+        printf("Erro ao criar o arquivo temporário.\n");
+        fclose(arq);
+        return 1;
+    }
+
+    char line[1024];
+    int found = 0;
+
+    while (fgets(line, sizeof(line), arq)) {
+        char idInLine[10];
+        sscanf(line, "%9[^;];", idInLine);
+
+        if (strcmp(idInLine, idClt) == 0) {
+            found = 1;
+            
+            fprintf(tempFile, "%s;%s;%s;%s;%s;%s;%s\n", idClt, clt->cpf, clt->name, 
+                                                      clt->name_enterprise, clt->phone, 
+                                                      clt->email, clt->birthdate);
+        } else {
+            
+            fputs(line, tempFile);
+        }
+    }
 
     fclose(arq);
+    fclose(tempFile);
 
-    fileLines[target][strcspn(fileLines[target], "\n")] = 0;
-    iten = strtok(fileLines[target], ";");
-
-    cpf = strtok(NULL, ";");
-    name = strtok(NULL, ";");
-    name_enterprise = strtok(NULL, ";");
-    phone = strtok(NULL, ";");
-    email = strtok(NULL, ";");
-    birthdate = strtok(NULL, ";");
     
-    strcpy(line, "");
-    
-    printf("%s\n", *cpf);
-
-    if (!(clt->cpf))
-    {
-        strcat(cpf, clt->cpf);
-    }
-    if (!(clt->name))
-    {
-        name = clt->name;
-    }
-    if (!(clt->name_enterprise))
-    {
-        name_enterprise = clt->name_enterprise;
-    }
-    if (!(clt->phone))
-    {
-        phone = clt->phone;
-    }
-    if (!(clt->email))
-    {
-        email = clt->email;
-    }
-    if (!(clt->birthdate))
-    {
-        birthdate = clt->birthdate;
+    if (!found) {
+        printf("Cliente com ID %s não encontrado.\n", clt->id);
+        remove("DB/temp.csv");
+        return 1;
     }
 
-    printf("%s\n", cpf);
+    remove("DB/Clients.csv");
+    rename("DB/temp.csv", "DB/Clients.csv");
 
-    strcat(line, id);
-    strcat(line, ";");
-    strcat(line, cpf);
-    printf("%s\n", line);
-    strcat(line, ";");
-    strcat(line, name);
-    strcat(line, ";");
-    strcat(line, name_enterprise);
-    strcat(line, ";");
-    strcat(line, phone);
-    strcat(line, ";");
-    strcat(line, email);
-    strcat(line, ";");
-    strcat(line, birthdate);
-    strcat(line, "\n");
-    
-    printf("%d\n", target);
-
-    strcpy(fileLines[target], line);
-    
-    printf("%d\n", target);
-    
-    arq = fopen("DB/Clients.csv", "w");
-    
-    printf("%d\n", target);
-
-    for (size_t i = 0; i < size+1; i++)
-    {
-        fputs(fileLines[i], arq);
-    }
-    
-    printf("%d\n", target);
-
-    fclose(arq);
+    printf("Cliente atualizado com sucesso.\n");
     return 0;
 }
 
 
-int RemoverCliente(char id[])
-{
+// Feito
+int RemoverCliente(const char *id) {
+    FILE *arq = fopen("DB/Clients.csv", "r");
+    if (arq == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 1;
+    }
 
+    FILE *tempFile = fopen("DB/temp.csv", "w"); 
+    if (tempFile == NULL) {
+        printf("Erro ao criar arquivo temporário.\n");
+        fclose(arq);
+        return 1;
+    }
+
+    char line[1024];
+    int found = 0;
+
+
+    while (fgets(line, sizeof(line), arq)) {
+        char idInLine[10];
+        sscanf(line, "%9[^;];", idInLine);  
+
+        if (strcmp(idInLine, id) != 0) {
+            fputs(line, tempFile);
+        } else {
+            found = 1;
+        }
+    }
+
+    fclose(arq);
+    fclose(tempFile);
+
+    if (!found) {
+        printf("Cliente com ID %s não encontrado.\n", id);
+        remove("DB/temp.csv");
+        return 1;
+    }
+
+    remove("DB/Clients.csv");
+    rename("DB/temp.csv", "DB/Clients.csv");
+
+    printf("Cliente com ID %s removido com sucesso.\n", id);
+    return 0;
 }

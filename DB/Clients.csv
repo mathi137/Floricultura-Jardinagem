@@ -1,10 +1,6 @@
 ID;CPF;nome;nome_empresa;telefone;email;data_nasc
 0;123.456.789-01;a;a;(34)99999-9999;asd@email.com;12/23/3444
-1;123.456.789-02;b;b;(34)99999-1000;asd@email.com;12/23/3445
 2;123.456.789-03;c;c;(34)99999-1001;asd@email.com;12/23/3446
-3;123.456.789-04;d;d;(34)99999-1002;asd@email.com;12/23/3447
-4;123.456.789-05;e;e;(34)99999-1003;asd@email.com;12/23/3448
-5;123.456.789-06;f;f;(34)99999-1004;asd@email.com;12/23/3449
-6;123.456.789-07;g;g;(34)99999-1005;asd@email.com;12/23/3450
-7;123.456.789-08;h;h;(34)99999-1006;asd@email.com;12/23/3450
-123;123;123;123;123;123;123
+6;Newcpf;Newcpf;Newcpf;Newcpf;Newcpf;Newcpf
+7;asd;asd;asd;asd;asd;asd
+8;fgh;fgh;fgh;fgh;fgh;fgh
