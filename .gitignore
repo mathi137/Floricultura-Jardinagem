@@ -6,6 +6,7 @@
 .vscode
 .exe
 
+test
 test/
 testeHfiles.c
 client_test.h
