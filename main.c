@@ -1,8 +1,8 @@
 #include <stdio.h>
 // #include "client.h"
-#include "product.h"
-#include "payment.h"
-
+#include "utils/product.h"
+#include "utils/payment.h"
+#include "utils/crudUsers.h"
 
 /*
 *  Função: main
@@ -33,7 +33,7 @@ int main(void)
         switch (option)
         {
         case 1:
-            // client_menu(&clients);
+            client_menu();
             break;
 
         case 2:

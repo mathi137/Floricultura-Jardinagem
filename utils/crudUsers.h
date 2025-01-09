@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "utils.h"
 #define LINE_SIZE 1024
 
 typedef struct
@@ -15,65 +16,54 @@ typedef struct
 } Client;
 
 
-void addSomeStrings(char ***input, char newLine[1024], int *currentSize)
-{
-    char **data;
-    
-    data = (char **) realloc(*input, (*currentSize+1) * sizeof(char *));
-    data[*currentSize] = (char *) malloc(LINE_SIZE*sizeof(char *));
-    strcpy(data[*currentSize], newLine);
-    currentSize++;
-}
-
-// feito
-int ListarCliente(char id[])
-{
-    FILE * arq = fopen("DB/Clients.csv", "r");
-    char line[1024] = "", *iten;
-
-    while (fgets(line, sizeof(line), arq))
-    {
-        line[strcspn(line, "\n")] = 0;
-        iten = strtok(line, ";");
-        if (strcmp(id, iten) != 0) continue;
-        while (iten != NULL)
-        {
-            printf("-%s-", iten);
-            iten = strtok(NULL, ";");
-        }
-        printf("%s\n", "");
-    }
-    
-    fclose(arq);
-    return 0;
-}
-
 // feito
 int ListarClientes()
 {
     FILE * arq = fopen("DB/Clients.csv", "r");
     char line[1024] = "", *iten;
+    int atLeastOne = 0;
+
+    printf("======= Clientes =======\n\n");
 
     while (fgets(line, sizeof(line), arq))
     {
         line[strcspn(line, "\n")] = 0;
         iten = strtok(line, ";");
 
-        while (iten != NULL)
-        {
-            printf("-%s-", iten);
-            iten = strtok(NULL, ";");
-        }
-        printf("%s\n", "");
+        iten = strtok(NULL, ";");
+        printf(" -CPF: %s\n", iten);
+        iten = strtok(NULL, ";");
+        printf(" -Nome: %s\n", iten);
+        iten = strtok(NULL, ";");
+        printf(" -Nome da Empresa: %s\n", iten);
+        iten = strtok(NULL, ";");
+        printf(" -Telefone: %s\n", iten);
+        iten = strtok(NULL, ";");
+        printf(" -Email: %s\n", iten);
+        iten = strtok(NULL, ";");
+        printf(" -Data de Nascimento: %s\n\n", iten);
+
+        atLeastOne=1;
     }
+
+    if (!atLeastOne) printf("- Sem clientes cadastrados\n\n");
+
+    printf("========================\n\n");
     
     fclose(arq);
     return 0;
 }
 
+
 // feito
-int InserirCliente(Client *clt)
+int CadastrarCliente(Client *clt)
 {
+    if (strcmp(trim(clt->cpf), "") == 0)
+    {
+        printf("CPF nao pode ser nulo!\n");
+        return 1;
+    }
+
     char *lastID = "0", *cpfConf, _line[1024];
 
     FILE * arq;
@@ -87,8 +77,8 @@ int InserirCliente(Client *clt)
 
         if (strcmp(clt->cpf, cpfConf) == 0)
         {
-            perror("CPF ja cadastrado!");
-            return 1;
+            printf("CPF ja cadastrado!\n");
+            return 2;
         }
     }
 
@@ -119,31 +109,19 @@ int InserirCliente(Client *clt)
 
     fputs(line, arq);
 
+    printf("Cliente cadastrado.\n");
+
     fclose(arq);
     return 0;
 }
 
 
 // Feito
-int AlterarCliente(Client *clt, char idClt[]) {
+int AtualizarCliente(Client *clt) {
     FILE *arq = fopen("DB/Clients.csv", "r");
     if (arq == NULL) {
         printf("Erro ao abrir o arquivo.\n");
         return 1;
-    }
-
-    char tempLine[1024];
-
-    while (fgets(tempLine, sizeof(tempLine), arq))
-    {
-        char *tempID = strtok(tempLine, ";");
-        char *cpfConf = strtok(NULL, ";");
-
-        if (strcmp(clt->cpf, cpfConf) == 0)
-        {
-            perror("CPF ja existente!");
-            return 1;
-        }
     }
 
     FILE *tempFile = fopen("DB/temp.csv", "w");
@@ -157,13 +135,15 @@ int AlterarCliente(Client *clt, char idClt[]) {
     int found = 0;
 
     while (fgets(line, sizeof(line), arq)) {
-        char idInLine[10];
-        sscanf(line, "%9[^;];", idInLine);
+        char *idInLine, *cpfInLine, tempLine[1024];
+        strcpy(tempLine, line);
+        idInLine = strtok(tempLine, ";");
+        cpfInLine = strtok(NULL, ";");
 
-        if (strcmp(idInLine, idClt) == 0) {
+        if (strcmp(cpfInLine, clt->cpf) == 0) {
             found = 1;
             
-            fprintf(tempFile, "%s;%s;%s;%s;%s;%s;%s\n", idClt, clt->cpf, clt->name, 
+            fprintf(tempFile, "%s;%s;%s;%s;%s;%s;%s\n", idInLine, clt->cpf, clt->name, 
                                                       clt->name_enterprise, clt->phone, 
                                                       clt->email, clt->birthdate);
         } else {
@@ -177,7 +157,7 @@ int AlterarCliente(Client *clt, char idClt[]) {
 
     
     if (!found) {
-        printf("Cliente com ID %s não encontrado.\n", clt->id);
+        printf("Cliente com CPF %s nao encontrado.\n", clt->cpf);
         remove("DB/temp.csv");
         return 1;
     }
@@ -191,7 +171,7 @@ int AlterarCliente(Client *clt, char idClt[]) {
 
 
 // Feito
-int RemoverCliente(const char *id) {
+int RemoverCliente(const char *cpf) {
     FILE *arq = fopen("DB/Clients.csv", "r");
     if (arq == NULL) {
         printf("Erro ao abrir o arquivo.\n");
@@ -202,7 +182,7 @@ int RemoverCliente(const char *id) {
     if (tempFile == NULL) {
         printf("Erro ao criar arquivo temporário.\n");
         fclose(arq);
-        return 1;
+        return 2;
     }
 
     char line[1024];
@@ -210,10 +190,12 @@ int RemoverCliente(const char *id) {
 
 
     while (fgets(line, sizeof(line), arq)) {
-        char idInLine[10];
-        sscanf(line, "%9[^;];", idInLine);  
+        char *idInLine, *cpfInLine, tempLine[1024];
+        strcpy(tempLine, line);
+        idInLine = strtok(tempLine, ";");
+        cpfInLine = strtok(NULL, ";");
 
-        if (strcmp(idInLine, id) != 0) {
+        if (strcmp(cpfInLine, cpf) != 0) {
             fputs(line, tempFile);
         } else {
             found = 1;
@@ -224,14 +206,87 @@ int RemoverCliente(const char *id) {
     fclose(tempFile);
 
     if (!found) {
-        printf("Cliente com ID %s não encontrado.\n", id);
+        printf("Cliente com CPF %s nao encontrado.\n", cpf);
         remove("DB/temp.csv");
-        return 1;
+        return 3;
     }
 
     remove("DB/Clients.csv");
     rename("DB/temp.csv", "DB/Clients.csv");
 
-    printf("Cliente com ID %s removido com sucesso.\n", id);
+    printf("Cliente com CPF %s removido com sucesso.\n", cpf);
+    return 0;
+}
+
+
+int client_menu()
+{
+    int option;
+    char cpf[10];
+    Client clt;
+    do
+    {
+        printf("\nEscolha uma opcao:\n");
+        printf("1: Listar clientes\n2: Cadastrar cliente\n3: Atualizar cliente pelo CPF\n4: Remover cliente\n0: Sair\n");
+        printf("->: ");
+
+        scanf("%d", &option);
+
+        printf("\n");
+
+        switch (option)
+        {
+        case 1:
+            ListarClientes();
+            break;
+
+        case 2:
+            getchar();
+            printf("CPF: ");
+            gets(clt.cpf);
+            printf("Nome: ");
+            gets(clt.name);
+            printf("Nome da Empresa: ");
+            gets(clt.name_enterprise);
+            printf("Telefone: ");
+            gets(clt.phone);
+            printf("Email: ");
+            gets(clt.email);
+            printf("Data de Nascimento: ");
+            gets(clt.birthdate);
+            CadastrarCliente(&clt);
+            break;
+
+        case 3:
+            getchar();
+            printf("CPF: ");
+            gets(clt.cpf);
+            printf("Nome: ");
+            gets(clt.name);
+            printf("Nome da Empresa: ");
+            gets(clt.name_enterprise);
+            printf("Telefone: ");
+            gets(clt.phone);
+            printf("Email: ");
+            gets(clt.email);
+            printf("Data de Nascimento: ");
+            gets(clt.birthdate);
+            AtualizarCliente(&clt);
+            break;
+
+        case 4:
+            getchar();
+            printf("Digite o CPF do Cliente: ");
+            gets(cpf);
+            RemoverCliente(cpf);
+            break;
+
+        default:
+            printf("Opcao inexistente!\n");
+            break;
+        }
+    } 
+    while (option != 0);
+
     return 0;
 }
