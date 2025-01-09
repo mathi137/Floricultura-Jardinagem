@@ -4,8 +4,7 @@
 
 .vscode/
 .vscode
-.exe
+*.exe
 
+test
 test/
-testeHfiles.c
-client_test.h

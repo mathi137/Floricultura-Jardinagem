@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "utils.h"
-#define LINE_SIZE 1024
 
 typedef struct
 {
@@ -16,7 +15,12 @@ typedef struct
 } Client;
 
 
-// feito
+/*
+* Função: ListarClientes
+* Descrição: Lista todos os clientes cadastrados no arquivo 'Clients.csv'.
+* Retorna:
+*   int 0: se houve listagem. 1: caso não haja clientes para listar.
+*/
 int ListarClientes()
 {
     FILE * arq = fopen("DB/Clients.csv", "r");
@@ -46,7 +50,11 @@ int ListarClientes()
         atLeastOne=1;
     }
 
-    if (!atLeastOne) printf("- Sem clientes cadastrados\n\n");
+    if (!atLeastOne) 
+    {
+        printf("- Sem clientes cadastrados\n\n");
+        return 1;
+    }
 
     printf("========================\n\n");
     
@@ -55,7 +63,14 @@ int ListarClientes()
 }
 
 
-// feito
+/*
+* Função: CadastrarCliente
+* Descrição: Cadastra um cliente no arquivo 'Clients.csv'.
+* Parâmetros:
+*   Client *clt - Ponteiro para o objeto do tipo Client.
+* Retorna:
+*   int 1: se o CPF for nulo. 2: caso CPF ja esteja cadastrado. 0: caso o CPF for cadastrado com sucesso.
+*/
 int CadastrarCliente(Client *clt)
 {
     if (strcmp(trim(clt->cpf), "") == 0)
@@ -116,7 +131,14 @@ int CadastrarCliente(Client *clt)
 }
 
 
-// Feito
+/*
+* Função: AtualizarCliente
+* Descrição: atualiza os dados de um cliente ja existente no arquivo 'Clients.csv' baseado em seu CPF.
+* Parâmetros:
+*   Client *clt - Ponteiro para o objeto do tipo Client.
+* Retorna:
+*   int 1: Erro ao abrir o arquivo. 2: Erro ao criar o arquivo temporário. 3: CPF nao encontrado. 0: Cliente atualizado com sucesso.
+*/
 int AtualizarCliente(Client *clt) {
     FILE *arq = fopen("DB/Clients.csv", "r");
     if (arq == NULL) {
@@ -128,7 +150,7 @@ int AtualizarCliente(Client *clt) {
     if (tempFile == NULL) {
         printf("Erro ao criar o arquivo temporário.\n");
         fclose(arq);
-        return 1;
+        return 2;
     }
 
     char line[1024];
@@ -159,7 +181,7 @@ int AtualizarCliente(Client *clt) {
     if (!found) {
         printf("Cliente com CPF %s nao encontrado.\n", clt->cpf);
         remove("DB/temp.csv");
-        return 1;
+        return 3;
     }
 
     remove("DB/Clients.csv");
@@ -170,8 +192,15 @@ int AtualizarCliente(Client *clt) {
 }
 
 
-// Feito
-int RemoverCliente(const char *cpf) {
+/*
+* Função: RemoverCliente
+* Descrição: Remove o cadastro de um cliente do arquivo 'Clients.csv'.
+* Parâmetros:
+*   char *cpf - ponteiro para a variavel cpf
+* Retorna:
+*   int 1: Erro ao abrir o arquivo. 2: Erro ao criar o arquivo temporário. 3: CPF nao encontrado. 0: Cliente removido com sucesso.
+*/
+int RemoverCliente(char *cpf) {
     FILE *arq = fopen("DB/Clients.csv", "r");
     if (arq == NULL) {
         printf("Erro ao abrir o arquivo.\n");
@@ -218,7 +247,12 @@ int RemoverCliente(const char *cpf) {
     return 0;
 }
 
-
+/*
+* Função: client_menu
+* Descrição: É chamada na main. Controla o menu de produtos.
+* Retorna:
+*   int: 1 se sucesso, 0 se falha.
+*/
 int client_menu()
 {
     int option;

@@ -1,5 +1,4 @@
 #include <stdio.h>
-// #include "client.h"
 #include "utils/product.h"
 #include "utils/payment.h"
 #include "utils/crudUsers.h"
@@ -12,12 +11,10 @@
 */
 int main(void) 
 {
-    // Client clients = { NULL, 0 };
     Products products = { NULL, 0 };
     Payments payments = { NULL, 0 };
 
     // Criar os respectivos arquivos
-    // if (!create_clients_file()) return 0;
     if (!create_products_file()) return 0;
     if (!create_payments_file()) return 0;
 
@@ -52,7 +49,6 @@ int main(void)
 
     printf("FIM DO PROGRAMA\n");
 
-    // free_clients(&clients);
     free_products(&products);
     free_payments(&payments);    
 
