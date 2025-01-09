@@ -504,6 +504,16 @@ int add_product(Products *pProducts)
         printf("\nNome invalido.\n");
         return 0;
     }
+
+    for (int i = 0; i < pProducts->nProducts; i++) 
+    {
+        if (strcmp(product.name, pProducts->pProducts[i].name) == 0) 
+        {
+            printf("\nProduto ja cadastrado.\n");
+            return 0;
+        }
+    }
+
     if (product.description[0] == '\0') 
     {
         printf("\nDescricao invalida.\n");
