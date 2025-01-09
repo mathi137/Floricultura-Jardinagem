@@ -8,3 +8,4 @@
 
 test/
 testeHfiles.c
+client_test.h
