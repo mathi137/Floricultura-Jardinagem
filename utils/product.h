@@ -284,6 +284,40 @@ int search_product(Products *pProducts, int products_index[])
 }
 
 /*
+*  Função: list_search_product    
+*  Descrição: Listar os produtos.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
+int list_search_product(Products *pProducts) 
+{
+    int products_index[pProducts->nProducts];
+    // search_product coleta os indices dos produtos a serem removidos e retorna o numero de produtos encontrados
+    int nProducts_found = search_product(pProducts, products_index);
+
+    if (nProducts_found == 0) 
+    {
+        printf("\nProduto nao encontrado.\n");
+        return 0;
+    }
+
+    Products *pProducts_found = (Products *)malloc(sizeof(Products));
+    pProducts_found->nProducts = nProducts_found;
+    pProducts_found->pProducts = (Product *)malloc(nProducts_found * sizeof(Product));
+
+    for (int i = 0; i < nProducts_found; i++) 
+    {
+        pProducts_found->pProducts[i] = pProducts->pProducts[products_index[i]];
+    }
+
+    list_products(pProducts_found);
+
+    return 0;
+}
+
+/*
 *  Função: get_all_products_from_csv
 *  Descrição: Obtem todos os produtos do arquivo CSV.
 *
@@ -851,7 +885,7 @@ int product_menu(Products *pProducts)
     do
     {
         printf("\nEscolha uma opcao:\n");
-        printf("1: Adicionar produto\n2: Remover produto\n3: Editar produto\n4: Listar produtos\n5: Listar produtos alfabeticamente\n6: Exportar produtos para CSV\n7: Importar produtos de CSV\n0: Sair\n");
+        printf("1: Adicionar produto\n2: Remover produto\n3: Editar produto\n4: Listar produtos\n5: Listar produtos alfabeticamente\n6: Buscar produto\n7: Exportar produtos para CSV\n8: Importar produtos de CSV\n0: Sair\n");
 
         scanf("%d", &option);
 
@@ -878,10 +912,14 @@ int product_menu(Products *pProducts)
             break;
         
         case 6:
-            export_products_to_csv(pProducts, 1);
+            list_search_product(pProducts);
             break;
 
         case 7:
+            export_products_to_csv(pProducts, 1);
+            break;
+
+        case 8:
             import_products_from_csv(pProducts);
             break;
 

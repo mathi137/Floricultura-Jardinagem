@@ -68,7 +68,7 @@ void print_payment(const Payment *pPayment)
     printf("Produtos: ");
     for (int i = 0; i < pPayment->pProducts->nProducts; i++) {
         if (counts[i] > 0) {
-            printf("%dx%s ", counts[i], pPayment->pProducts->pProducts[i].name);
+            printf("%dx %s ", counts[i], pPayment->pProducts->pProducts[i].name);
         }
     }
     printf("\n");
@@ -340,6 +340,40 @@ int search_payment(Payments *pPayments, int payments_index[])
             break;
         }
     } while (option < 1 || option > 3);
+
+    return 0;
+}
+
+/*
+*  Função: list_search_product    
+*  Descrição: Listar os produtos.
+*  Parâmetros:
+*      Products *pProducts: ponteiro para o objeto do tipo Products.
+*  Retorna:
+*      int: 1 se sucesso, 0 se falha.
+*/
+int list_search_payment(Payments *pPayment) 
+{
+    int products_index[pPayment->nPayments];
+    // search_product coleta os indices dos produtos a serem removidos e retorna o numero de produtos encontrados
+    int nPayments_found = search_payment(pPayment, products_index);
+
+    if (nPayments_found == 0) 
+    {
+        printf("\nPagamento nao encontrado.\n");
+        return 0;
+    }
+
+    Payments *pPayments_found = (Payments *)malloc(sizeof(Payments));
+    pPayments_found->nPayments = nPayments_found;
+    pPayments_found->pPayments = (Payment *)malloc(nPayments_found * sizeof(Payment));
+
+    for (int i = 0; i < nPayments_found; i++) 
+    {
+        pPayments_found->pPayments[i] = pPayments_found->pPayments[products_index[i]];
+    }
+
+    list_payments(pPayments_found);
 
     return 0;
 }
